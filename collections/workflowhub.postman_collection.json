@@ -1,0 +1,546 @@
+{
+  "info": {
+    "name": "WorkFlowHub API 操作与回归",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "description": "导入 Postman/Apifox；密码只在本机填写。状态流转需按 README 切换角色，不能整集合直接无差别运行。"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:8011"
+    },
+    {
+      "key": "token",
+      "value": ""
+    },
+    {
+      "key": "admin_password",
+      "value": ""
+    },
+    {
+      "key": "requester_password",
+      "value": ""
+    },
+    {
+      "key": "engineer_password",
+      "value": ""
+    },
+    {
+      "key": "run_id",
+      "value": "manual-001"
+    },
+    {
+      "key": "asset_id",
+      "value": ""
+    },
+    {
+      "key": "ticket_id",
+      "value": ""
+    },
+    {
+      "key": "engineer_id",
+      "value": ""
+    },
+    {
+      "key": "version",
+      "value": "1"
+    }
+  ],
+  "item": [
+    {
+      "name": "admin 操作",
+      "item": [
+        {
+          "name": "登录 admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"admin\", \"password\": \"{{admin_password}}\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"登录成功\",()=>pm.response.to.have.status(200));",
+                  "if(pm.response.code===200)pm.collectionVariables.set(\"token\",pm.response.json().access_token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "创建资产",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/assets",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"code\": \"POSTMAN-{{run_id}}\", \"name\": \"演示电脑\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code===201)pm.collectionVariables.set(\"asset_id\",pm.response.json().id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "查询用户并记录工程师 ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/users"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const u=pm.response.json().find(u=>u.username===\"engineer\"); if(u)pm.collectionVariables.set(\"engineer_id\",u.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "资产列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/assets"
+          }
+        }
+      ]
+    },
+    {
+      "name": "requester 操作",
+      "item": [
+        {
+          "name": "登录 requester",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"requester\", \"password\": \"{{requester_password}}\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"登录成功\",()=>pm.response.to.have.status(200));",
+                  "if(pm.response.code===200)pm.collectionVariables.set(\"token\",pm.response.json().access_token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "创建工单",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/tickets",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"title\": \"办公设备无法连接\", \"description\": \"检查网络连接\", \"asset_id\": {{asset_id}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code===201){pm.collectionVariables.set(\"ticket_id\",pm.response.json().id);pm.collectionVariables.set(\"version\",pm.response.json().version);}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "工单列表",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/tickets?status=OPEN&page=1&size=20"
+          }
+        },
+        {
+          "name": "本人信息",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/me"
+          }
+        }
+      ]
+    },
+    {
+      "name": "engineer 操作",
+      "item": [
+        {
+          "name": "登录 engineer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"username\": \"engineer\", \"password\": \"{{engineer_password}}\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"登录成功\",()=>pm.response.to.have.status(200));",
+                  "if(pm.response.code===200)pm.collectionVariables.set(\"token\",pm.response.json().access_token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "处理人可见工单",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/tickets"
+          }
+        },
+        {
+          "name": "查看工单历史",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/tickets/{{ticket_id}}/history"
+          }
+        }
+      ]
+    },
+    {
+      "name": "状态流转（按角色切换 token 后操作）",
+      "item": [
+        {
+          "name": "管理员指派",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/tickets/{{ticket_id}}/assign",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"version\": {{version}}, \"assignee_id\": {{engineer_id}}}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code<300&&pm.response.code!==204)pm.collectionVariables.set(\"version\",pm.response.json().version);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "工程师处理记录",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/tickets/{{ticket_id}}/notes",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"version\": {{version}}, \"text\": \"已检查网络\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code<300&&pm.response.code!==204)pm.collectionVariables.set(\"version\",pm.response.json().version);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "工程师解决",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/tickets/{{ticket_id}}/transition",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"version\": {{version}}, \"target\": \"RESOLVED\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code<300&&pm.response.code!==204)pm.collectionVariables.set(\"version\",pm.response.json().version);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "创建者关闭",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/tickets/{{ticket_id}}/transition",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"version\": {{version}}, \"target\": \"CLOSED\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code<300&&pm.response.code!==204)pm.collectionVariables.set(\"version\",pm.response.json().version);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "创建者重开",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{base_url}}/api/tickets/{{ticket_id}}/transition",
+            "body": {
+              "mode": "raw",
+              "raw": "{\"version\": {{version}}, \"target\": \"OPEN\"}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if(pm.response.code<300&&pm.response.code!==204)pm.collectionVariables.set(\"version\",pm.response.json().version);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "退出登录",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": "{{base_url}}/api/auth/logout"
+          }
+        }
+      ]
+    }
+  ]
+}

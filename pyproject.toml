@@ -1,0 +1,24 @@
+[project]
+name = "workflowhub-qa"
+version = "0.1.0"
+description = "Independent HTTP contract and regression tests for WorkFlowHub"
+requires-python = ">=3.11"
+dependencies = ["pytest>=8", "httpx>=0.27"]
+
+[project.optional-dependencies]
+dev = ["ruff>=0.9"]
+
+[tool.setuptools]
+packages = []
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"

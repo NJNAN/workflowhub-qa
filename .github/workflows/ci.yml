@@ -1,0 +1,37 @@
+name: Independent API regression
+on:
+  workflow_dispatch:
+    inputs:
+      business_repository:
+        description: 'Published business repository owner/name'
+        required: true
+      business_ref:
+        description: 'Business commit SHA or tag to test'
+        required: true
+permissions:
+  contents: read
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: workflowhub-qa
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.business_repository }}
+          ref: ${{ inputs.business_ref }}
+          path: workflowhub
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -e 'workflowhub[test]'
+      - run: ruff check tests scripts && ruff format --check tests scripts
+        working-directory: workflowhub-qa
+      - run: mkdir -p reports && pytest --basetemp=reports/tmp-ci --junitxml=reports/junit.xml
+        working-directory: workflowhub-qa
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: http-regression-results
+          path: workflowhub-qa/reports/*.xml
