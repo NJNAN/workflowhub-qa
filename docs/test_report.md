@@ -9,7 +9,7 @@
 |独立Compose+MySQL服务|17项，失败/错误0，JUnit耗时1.46秒|workflowhub-qa/reports/compose_junit.xml|
 |Docker启动|以docker_verification.txt为准|workflowhub/reports/docker_verification.txt|
 |静态检查|ruff check通过；format检查收尾单独记录|reports/final_checks.txt|
-|远程GitHub Actions|仅有配置，本地对应命令已运行；远程未运行|两仓.github/workflows/ci.yml|
+|远程GitHub Actions|业务与独立QA均通过|[业务CI](https://github.com/NJNAN/workflowhub/actions/runs/38063407527)、[QA CI](https://github.com/NJNAN/workflowhub-qa/actions/runs/38063437949)；固定提交见source_versions.md|
 |Postman/Apifox|有可导入集合，客户端未执行|QA collections/|
 
 coverage统计397/413行，96.13%，仅用于定位遗漏，没有用覆盖率包装能力。47与46是同一套大部分案例在不同数据库复跑，不能相加为93个独立用例。浏览器中文创建/详情、页签重置为手动操作；没有计入17项。

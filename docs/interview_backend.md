@@ -54,4 +54,4 @@ Alembic版本描述历史schema，不在迁移运行时create_all最新模型；
 浏览器同源fetch，令牌内存保存；详情拿version再写；textContent显示数据；无刷新保持登录与复杂SPA依赖。
 
 ## 18. 部署与CI的边界？
-Compose web+MySQL，迁移先执行，health依赖，非root应用。CI YAML对应本地检查通过，未发布仓库所以远程Actions未验证。
+Compose web+MySQL，迁移先执行，health依赖，非root应用。业务与独立QA远程GitHub Actions已通过，记录见[业务CI](https://github.com/NJNAN/workflowhub/actions/runs/38063407527)、[QA CI](https://github.com/NJNAN/workflowhub-qa/actions/runs/38063437949)。

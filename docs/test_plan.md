@@ -9,4 +9,4 @@
 
 入场：环境可创建临时数据库，健康端点与迁移可执行。退出：关键功能/权限/事务案例全部通过，已发现P2完成对应验证；没有未处理P1。缺陷按P1破坏授权/数据、P2功能安全问题、P3体验区分，不为了数量编造缺陷。故障注入不是实际开发Bug。
 
-执行：业务README的pytest+coverage，scripts/verify_mysql.py，独立仓pytest；保存JUnit、SQL/HTTP原始样本、失败回归日志。默认Windows沙箱曾使ASGI/进程启动停滞，获执行环境授权后恢复；该现象不计产品缺陷。远程Actions和Postman客户端没有执行，不能标为通过。
+执行：业务README的pytest+coverage，scripts/verify_mysql.py，独立仓pytest；保存JUnit、SQL/HTTP原始样本、失败回归日志。默认Windows沙箱曾使ASGI/进程启动停滞，获执行环境授权后恢复；该现象不计产品缺陷。业务与独立QA远程GitHub Actions已通过，记录见[业务CI](https://github.com/NJNAN/workflowhub/actions/runs/38063407527)、[QA CI](https://github.com/NJNAN/workflowhub-qa/actions/runs/38063437949)。Postman客户端未执行，不标为通过。
